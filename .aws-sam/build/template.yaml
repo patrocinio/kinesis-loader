@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'repeater
+
+  Sample SAM Template for repeater
+
+  '
+Globals:
+  Function:
+    Timeout: 600
+    MemorySize: 256
+    Tracing: Active
+  Api:
+    TracingEnabled: true
+Parameters:
+  LoaderURL:
+    Type: String
+    Description: Auth URL
+Resources:
+  RepeaterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: RepeaterFunction
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - x86_64
+      Events:
+        ScheduleEvent:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: rate(5 minutes)
+        Repeat:
+          Type: Api
+          Properties:
+            Path: /repeat
+            Method: get
+      Environment:
+        Variables:
+          AUTH_URL:
+            Ref: LoaderURL
+    Metadata:
+      SamResourceId: RepeaterFunction
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+Outputs:
+  RepeaterApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/repeat/
