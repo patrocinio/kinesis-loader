@@ -4,6 +4,7 @@ import json
 import logging
 import boto3
 from botocore.exceptions import ClientError
+import time
 
 kinesis_client = boto3.client("kinesis")
 stream_name = "lowd"
@@ -27,7 +28,10 @@ def lambda_handler(event, context):
     # Run for 5 minutes
     counter = 0
     for iter in range(1, 5*60):
+        start_time = time.time()
         put_record(counter)
-        time.sleep(1)
+        time_spent = time.time() - start_time
+        print ("Time spent %s." % time_spent)
+        time.sleep(1 - time_spent)
         counter = counter+1
     
