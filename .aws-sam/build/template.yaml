@@ -13,9 +13,10 @@ Globals:
   Api:
     TracingEnabled: true
 Parameters:
-  LoaderURL:
-    Type: String
-    Description: Auth URL
+  TPS:
+    Type: Number
+    Description: Transactions per seconds
+    Default: 10
 Resources:
   RepeaterFunction:
     Type: AWS::Serverless::Function
@@ -39,8 +40,8 @@ Resources:
             Method: get
       Environment:
         Variables:
-          AUTH_URL:
-            Ref: LoaderURL
+          TPS:
+            Ref: TPS
     Metadata:
       SamResourceId: RepeaterFunction
   ApplicationResourceGroup:

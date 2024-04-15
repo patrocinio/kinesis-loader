@@ -5,11 +5,12 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 import time
+import os
 
 kinesis_client = boto3.client("kinesis")
 stream_name = "lowd"
 logger = logging.getLogger(__name__)
-tps = 10
+tps = int(os.environ.get("TPS"))
 
 def put_record(count):
     try:
@@ -27,6 +28,8 @@ def put_record(count):
         return response
 
 def lambda_handler(event, context):
+
+    print ("TPS: ", tps)
 
     # Run for 5 minutes
     counter = 0
