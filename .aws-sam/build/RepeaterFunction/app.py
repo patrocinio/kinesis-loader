@@ -9,14 +9,17 @@ import time
 kinesis_client = boto3.client("kinesis")
 stream_name = "lowd"
 logger = logging.getLogger(__name__)
+tps = 10
 
 def put_record(count):
     try:
-        response = kinesis_client.put_record(
-            StreamName=stream_name, Data=json.dumps("anything"), PartitionKey=str(count)
-        )
-        logger.info ("Put record %d in stream %s.", count, stream_name)
-        print ("Put record %d in stream." % count)
+        for iter in range(1, tps):
+
+            response = kinesis_client.put_record(
+                StreamName=stream_name, Data=json.dumps("anything"), PartitionKey=str(count)
+            )
+        logger.info ("Put %d records %d in stream %s.", tps, count, stream_name)
+        print ("Put %d record %d in stream." % (tps, count))
     except ClientError:
         logger.exception("Couldn't put record in stream %s", stream_name)
         raise
@@ -32,6 +35,7 @@ def lambda_handler(event, context):
         put_record(counter)
         time_spent = time.time() - start_time
         print ("Time spent %s." % time_spent)
-        time.sleep(1 - time_spent)
+        if time_spent < 1:
+            time.sleep(1 - time_spent)
         counter = counter+1
     
