@@ -16,7 +16,7 @@ Parameters:
   TPS:
     Type: Number
     Description: Transactions per seconds
-    Default: 10
+    Default: 100
 Resources:
   RepeaterFunction:
     Type: AWS::Serverless::Function
@@ -32,7 +32,7 @@ Resources:
         ScheduleEvent:
           Type: ScheduleV2
           Properties:
-            ScheduleExpression: rate(5 minutes)
+            ScheduleExpression: rate(1 minute)
         Repeat:
           Type: Api
           Properties:

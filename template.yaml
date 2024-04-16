@@ -18,7 +18,7 @@ Parameters:
   TPS:
     Type: Number
     Description: Transactions per seconds
-    Default: 10
+    Default: 100
 
 Resources:
   RepeaterFunction:
@@ -35,7 +35,7 @@ Resources:
         ScheduleEvent:
           Type: ScheduleV2
           Properties:
-            ScheduleExpression: "rate(5 minutes)"
+            ScheduleExpression: "rate(1 minute)"
         Repeat:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
